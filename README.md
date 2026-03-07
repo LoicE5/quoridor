@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Quoridor
 
-## Getting Started
+A browser-based implementation of the Quoridor board game, built with Next.js 16, React 19, and TypeScript.
 
-First, run the development server:
+## The Game
+
+Quoridor is a 2–4 player abstract strategy game played on a 9×9 board. Each player has one pawn and a set of walls. The objective is to be the first player to reach the opposite side of the board.
+
+- **Blue** starts at row 9 and must reach row 1
+- **Red** starts at row 1 and must reach row 9
+- **Green** (3–4 players) starts at the centre and must reach column 1
+- **Purple** (4 players only) starts at the centre and must reach column 9
+
+On each turn a player either moves their pawn one square (orthogonally) or places a wall that spans two squares. A pawn blocked by another pawn may jump over it. Walls cannot cross each other or overlap.
+
+## Tech Stack
+
+- **Next.js 16** (App Router, Turbopack)
+- **React 19**
+- **TypeScript 5**
+- **CSS Modules**
+
+## Running locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
+bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Architecture
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+  types/game.ts          — shared TypeScript types
+  lib/
+    gameLogic.ts         — pure game logic (no DOM, no side effects)
+    localStorage.ts      — persistence helpers
+  hooks/
+    useGameReducer.ts    — useReducer wrapping all game state
+    useResponsiveBoard.ts — responsive board sizing
+  components/
+    Square/              — single board square (button + pawn image)
+    WallElement/         — clickable/placed wall overlay
+    WallBar/             — horizontal wall quota bar (top/bottom)
+    WallBarHorizon/      — vertical wall quota bar (left/right)
+    SquaresContainer/    — 81 squares + 128 wall overlays
+    Board/               — full board layout with wall bars
+    InfoPanel/           — round counter, player info, controls
+    PrizeDrawModal/      — start-of-game random player selection
+    WinModal/            — end-of-game result + play again
+    QuoridorGame.tsx     — root client component, wires everything
+  app/
+    page.tsx             — renders QuoridorGame
+    layout.tsx           — HTML shell
+    globals.css          — minimal reset + body styles
+```
 
-## Learn More
+Game state lives entirely in a single `useReducer`. All logic (move validation, wall placement, win detection) is in pure functions in `gameLogic.ts`.
 
-To learn more about Next.js, take a look at the following resources:
+## 1-player (vs AI) mode
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Not yet implemented. Clicking the "1 player (vs AI)" button shows an alert. The `PlayerCount` type includes `1` for forward compatibility.
