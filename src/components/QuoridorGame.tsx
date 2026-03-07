@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import type { PlayerCount, WallCount, WallId, WallOrientation } from '@/types/game'
 import { useGameReducer } from '@/hooks/useGameReducer'
@@ -11,8 +12,13 @@ import WinModal from '@/components/WinModal/WinModal'
 import styles from './QuoridorGame.module.css'
 
 export default function QuoridorGame() {
+  const [mounted, setMounted] = useState(false)
   const [state, dispatch] = useGameReducer()
   const boardSize = useResponsiveBoard()
+
+  useEffect(() => setMounted(true), [])
+
+  if(!mounted) return null
 
   function handleSetPlayers(count: PlayerCount) {
     if(count === 1) {
