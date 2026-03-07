@@ -1,0 +1,15 @@
+.square {
+  width: 10%;
+  height: 10%;
+  margin-top: 1.11%;
+  margin-left: 1.11%;
+  border: solid black 1px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+}
