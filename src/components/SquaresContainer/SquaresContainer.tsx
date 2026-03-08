@@ -39,7 +39,6 @@ export default function SquaresContainer({
       verticalWalls.push(
         <WallElement
           key={`v-${column}-${wallId}`}
-          wallId={wallId}
           orientation="vertical"
           rowOrColumn={column}
           topLeft={topLeft}
@@ -58,7 +57,6 @@ export default function SquaresContainer({
       horizontalWalls.push(
         <WallElement
           key={`h-${row}-${wallId}`}
-          wallId={wallId}
           orientation="horizontal"
           rowOrColumn={row}
           topLeft={topLeft}
@@ -76,8 +74,6 @@ export default function SquaresContainer({
           key={sq.index}
           index={sq.index}
           occupiedBy={sq.occupiedBy as PlayerColor | null}
-          hasWallRight={sq.hasWallRight}
-          hasWallBottom={sq.hasWallBottom}
           onClick={() => onSquareClick(sq.index)}
         />
       ))}

@@ -8,6 +8,7 @@ import type {
   WallOrientation
 } from '@/types/game'
 
+
 export function buildInitialSquares(): SquareState[] {
   return Array.from({ length: 81 }, (_, i) => ({
     index: i + 1,
@@ -148,9 +149,9 @@ export function isValidHorizontalWall(
   return !hasAdjacentLeft && !hasAdjacentRight && !hasCrossingVertical
 }
 
-export function checkWin(positions: PlayerPositions): PlayerColor | null {
+export function checkWin(positions: PlayerPositions, numberOfPlayers: PlayerCount): PlayerColor | null {
   const winLines = getWinLines()
-  const colors: PlayerColor[] = ['blue', 'red', 'green', 'purple']
+  const colors = getActiveColors(numberOfPlayers)
 
   for(const color of colors) {
     if(winLines[color].includes(positions[color])) return color

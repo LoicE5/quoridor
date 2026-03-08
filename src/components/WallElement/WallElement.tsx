@@ -1,8 +1,7 @@
-import type { WallId, WallOrientation } from '@/types/game'
+import type { WallOrientation } from '@/types/game'
 import styles from './WallElement.module.css'
 
 type WallElementProps = {
-  wallId: WallId
   orientation: WallOrientation
   rowOrColumn: number
   topLeft: string

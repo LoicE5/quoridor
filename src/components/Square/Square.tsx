@@ -5,8 +5,6 @@ import styles from './Square.module.css'
 type SquareProps = {
   index: number
   occupiedBy: PlayerColor | null
-  hasWallRight: boolean
-  hasWallBottom: boolean
   onClick: () => void
 }
 

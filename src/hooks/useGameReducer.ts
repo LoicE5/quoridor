@@ -103,7 +103,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       newSquares.at(target - 1)!.occupiedBy = action.color
 
       const newPositions = { ...state.playerPositions, [action.color]: target }
-      const winner = checkWin(newPositions)
+      const winner = checkWin(newPositions, state.numberOfPlayers)
 
       return {
         ...state,
