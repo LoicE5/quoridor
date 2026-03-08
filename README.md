@@ -11,7 +11,7 @@ Quoridor is a 2–4 player abstract strategy game played on a 9×9 board. Each p
 - **Green** (3–4 players) starts at the centre and must reach column 1
 - **Purple** (4 players only) starts at the centre and must reach column 9
 
-On each turn a player either moves their pawn one square (orthogonally) or places a wall that spans two squares. Moving onto an adjacent opponent's pawn immediately wins the game. Walls cannot cross each other or overlap.
+On each turn a player either moves their pawn one square (orthogonally) or places a wall that spans two squares. A pawn blocked by another pawn may jump over it. Walls cannot cross each other or overlap.
 
 ## Tech Stack
 
