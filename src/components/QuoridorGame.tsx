@@ -5,10 +5,9 @@ import Image from 'next/image'
 import type { PlayerCount, WallCount, WallId, WallOrientation } from '@/types/game'
 import { useGameReducer } from '@/hooks/useGameReducer'
 import { useResponsiveBoard } from '@/hooks/useResponsiveBoard'
+import { capitalizeFirst } from '@/lib/gameLogic'
 import Board from '@/components/Board/Board'
 import InfoPanel from '@/components/InfoPanel/InfoPanel'
-import PrizeDrawModal from '@/components/PrizeDrawModal/PrizeDrawModal'
-import WinModal from '@/components/WinModal/WinModal'
 import styles from './QuoridorGame.module.css'
 
 export default function QuoridorGame() {
@@ -17,6 +16,24 @@ export default function QuoridorGame() {
   const boardSize = useResponsiveBoard()
 
   useEffect(() => setMounted(true), [])
+
+  useEffect(() => {
+    if(!mounted) return
+    if(state.prizeDrawResult && !state.prizeDrawResult.isDone) {
+      const winner = state.prizeDrawResult.winner
+      alert(`Prize Draw! ${capitalizeFirst(winner)} starts the game!`)
+      dispatch({ type: 'PRIZE_DRAW_COMPLETE', startingPlayer: winner })
+    }
+  }, [mounted, state.prizeDrawResult, dispatch])
+
+  useEffect(() => {
+    if(!mounted) return
+    if(state.winResult.winner) {
+      const winner = state.winResult.winner
+      alert(`${capitalizeFirst(winner)} won the game!`)
+      dispatch({ type: 'ACKNOWLEDGE_WIN' })
+    }
+  }, [mounted, state.winResult, dispatch])
 
   if(!mounted) return null
 
@@ -64,25 +81,6 @@ export default function QuoridorGame() {
         onSquareClick={handleSquareClick}
         onWallClick={handleWallClick}
       />
-      {state.prizeDrawResult && !state.prizeDrawResult.isDone && (
-        <PrizeDrawModal
-          winner={state.prizeDrawResult.winner}
-          onAcknowledge={() => {
-            if(state.prizeDrawResult) {
-              dispatch({
-                type: 'PRIZE_DRAW_COMPLETE',
-                startingPlayer: state.prizeDrawResult.winner
-              })
-            }
-          }}
-        />
-      )}
-      {state.winResult.winner && (
-        <WinModal
-          winner={state.winResult.winner}
-          onPlayAgain={() => dispatch({ type: 'ACKNOWLEDGE_WIN' })}
-        />
-      )}
       <footer className={styles.credits}>
         Made with love by<br />Lo&iuml;c Etienne
       </footer>
