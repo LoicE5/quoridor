@@ -7,8 +7,6 @@ import {
   getInitialPositions,
   getActiveColors,
   isValidPawnMove,
-  getDirectionFromDiff,
-  resolveJumpTarget,
   getVerticalWallSquares,
   getHorizontalWallSquares,
   isValidVerticalWall,
@@ -85,20 +83,26 @@ function gameReducer(state: GameState, action: GameAction): GameState {
 
       const targetSq = state.squares.at(target - 1)!
 
-      let destination = target
+      // Crossing an opponent's pawn wins the game
       if(targetSq.occupiedBy !== null) {
-        const direction = getDirectionFromDiff(diff)
-        if(!direction) return state
-        const jumped = resolveJumpTarget(from, direction)
-        if(jumped === null) return state
-        destination = jumped
+        const newSquares = state.squares.map(sq => ({ ...sq }))
+        newSquares.at(from - 1)!.occupiedBy = null
+        newSquares.at(target - 1)!.occupiedBy = action.color
+        const newPositions = { ...state.playerPositions, [action.color]: target }
+        return {
+          ...state,
+          squares: newSquares,
+          playerPositions: newPositions,
+          currentRound: state.currentRound + 1,
+          winResult: { winner: action.color }
+        }
       }
 
       const newSquares = state.squares.map(sq => ({ ...sq }))
       newSquares.at(from - 1)!.occupiedBy = null
-      newSquares.at(destination - 1)!.occupiedBy = action.color
+      newSquares.at(target - 1)!.occupiedBy = action.color
 
-      const newPositions = { ...state.playerPositions, [action.color]: destination }
+      const newPositions = { ...state.playerPositions, [action.color]: target }
       const winner = checkWin(newPositions)
 
       return {
