@@ -32,6 +32,7 @@ export function getWinLines(): Record<PlayerColor, number[]> {
 }
 
 export function getActiveColors(numberOfPlayers: PlayerCount): PlayerColor[] {
+  // 1-player (vs AI): human=blue, AI=red — same two-color cycle as 2-player
   const colors: PlayerColor[] = ['blue', 'red']
   if(numberOfPlayers >= 3) colors.push('green')
   if(numberOfPlayers >= 4) colors.push('purple')
