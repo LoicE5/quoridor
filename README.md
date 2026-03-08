@@ -101,7 +101,7 @@ A Bruno collection is provided in `tests/bruno/` for the `/api/ai-move` endpoint
 bun add -g @usebruno/cli
 
 # run all requests against the local dev server
-bun x @usebruno/cli run tests/bruno --env local
+bunx @usebruno/cli run tests/bruno --env local
 ```
 
 See `tests/bruno/README.md` for endpoint contract details and per-request documentation.
