@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "bun test tests/"
   },
   "dependencies": {
     "@next/swc-linux-arm64-gnu": "^16.1.6",
@@ -15,6 +16,7 @@
     "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "@happy-dom/global-registrator": "^20.8.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

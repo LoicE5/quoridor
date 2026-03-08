@@ -29,6 +29,14 @@ bun run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Running tests
+
+```bash
+bun test
+```
+
+Tests live in `tests/` and use bun's native test runner. They cover all pure game-logic functions in `src/lib/gameLogic.ts` and the localStorage helpers in `src/lib/localStorage.ts`.
+
 ## Architecture
 
 ```
