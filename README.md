@@ -41,7 +41,7 @@ Tests live in `tests/` and use bun's native test runner. They cover all pure gam
 
 ```
 src/
-  types/game.ts          — shared TypeScript types
+  types/game.ts          — shared TypeScript types (incl. AI request/response)
   lib/
     gameLogic.ts         — pure game logic (no DOM, no side effects)
     localStorage.ts      — persistence helpers
@@ -61,10 +61,47 @@ src/
     page.tsx             — renders QuoridorGame
     layout.tsx           — HTML shell
     globals.css          — minimal reset + body styles
+    api/ai-move/
+      route.ts           — POST handler: computes valid moves, calls LLM, returns decision
 ```
 
 Game state lives entirely in a single `useReducer`. All logic (move validation, wall placement, win detection) is in pure functions in `gameLogic.ts`.
 
 ## 1-player (vs AI) mode
 
-Not yet implemented. Clicking the "1 player (vs AI)" button shows an alert. The `PlayerCount` type includes `1` for forward compatibility.
+Click **1 player (vs AI)** to play against an LLM-powered opponent. Human plays **blue**, AI plays **red**.
+
+The AI is powered by any OpenAI-compatible endpoint (OpenRouter, Ollama, etc.). Configure it via `.env`:
+
+```bash
+cp .env.example .env
+# fill in AI_API_URL, AI_API_KEY, AI_MODEL
+```
+
+### Recommended models
+
+| Provider | Model | Notes |
+|----------|-------|-------|
+| OpenRouter (free) | `meta-llama/llama-3.2-3b-instruct:free` | Fast, no cost |
+| OpenRouter (free) | `google/gemma-2-9b-it:free` | Better reasoning |
+| Ollama (M1 Mac) | `qwen2.5:3b` | Best structured-JSON output, ~2 GB |
+| Ollama (M1 Mac) | `llama3.2` | Good balance, ~2 GB |
+| Ollama (M1 Mac) | `gemma2:2b` | Smallest footprint, ~1.6 GB |
+
+For Ollama, set `AI_API_URL=http://localhost:11434/v1/chat/completions` and `AI_API_KEY=ollama`.
+
+The AI receives the full board state (positions, walls, remaining wall counts), computes all valid moves server-side, and prompts the model to return a JSON decision. If the model hallucinates an invalid move, the server falls back to a valid one automatically.
+
+## API testing (Bruno)
+
+A Bruno collection is provided in `tests/bruno/` for the `/api/ai-move` endpoint.
+
+```bash
+# install Bruno CLI
+bun add -g @usebruno/cli
+
+# run all requests against the local dev server
+bunx @usebruno/cli run tests/bruno --env local
+```
+
+See `tests/bruno/README.md` for endpoint contract details and per-request documentation.

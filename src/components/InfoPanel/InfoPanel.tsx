@@ -7,6 +7,7 @@ type InfoPanelProps = {
   currentRound: number
   numberOfPlayers: PlayerCount
   numberOfWalls: WallCount
+  aiThinking: boolean
   onSetPlayers: (count: PlayerCount) => void
   onToggleWalls: () => void
 }
@@ -16,18 +17,23 @@ export default function InfoPanel({
   currentRound,
   numberOfPlayers,
   numberOfWalls,
+  aiThinking,
   onSetPlayers,
   onToggleWalls
 }: InfoPanelProps) {
   const invertedWallCount: WallCount = numberOfWalls === 10 ? 5 : 10
+  const modeLabel = numberOfPlayers === 1 ? '1 player (vs AI)' : `${numberOfPlayers} players`
 
   return (
     <header className={styles.infoWrapper}>
       <h1>Round {currentRound}</h1>
       <p>
-        <b>It&apos;s {capitalizeFirst(currentPlayer)} to play</b>
+        {aiThinking
+          ? <b>AI is thinking…</b>
+          : <b>It&apos;s {capitalizeFirst(currentPlayer)} to play</b>
+        }
         {' | Selected mode : '}
-        <i>{numberOfPlayers} players</i>
+        <i>{modeLabel}</i>
       </p>
       <div className={styles.buttonsWrapper}>
         <button onClick={() => onSetPlayers(1)}>1 player (vs AI)</button>

@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
-import type { PlayerCount, WallCount, WallId, WallOrientation } from '@/types/game'
+import type { PlayerCount, WallCount, WallId, WallOrientation, AIMoveResponse } from '@/types/game'
 import { useGameReducer } from '@/hooks/useGameReducer'
 import { useResponsiveBoard } from '@/hooks/useResponsiveBoard'
 import { capitalizeFirst } from '@/lib/gameLogic'
@@ -10,13 +10,18 @@ import Board from '@/components/Board/Board'
 import InfoPanel from '@/components/InfoPanel/InfoPanel'
 import styles from './QuoridorGame.module.css'
 
+const AI_COLOR = 'red' as const
+
 export default function QuoridorGame() {
   const [mounted, setMounted] = useState(false)
+  const [aiThinking, setAiThinking] = useState(false)
   const [state, dispatch] = useGameReducer()
   const boardSize = useResponsiveBoard()
+  const aiRequestInFlight = useRef(false)
 
   useEffect(() => setMounted(true), [])
 
+  // Prize draw alert
   useEffect(() => {
     if(!mounted) return
     if(state.prizeDrawResult && !state.prizeDrawResult.isDone) {
@@ -26,6 +31,7 @@ export default function QuoridorGame() {
     }
   }, [mounted, state.prizeDrawResult, dispatch])
 
+  // Win alert
   useEffect(() => {
     if(!mounted) return
     if(state.winResult.winner) {
@@ -35,13 +41,61 @@ export default function QuoridorGame() {
     }
   }, [mounted, state.winResult, dispatch])
 
+  // AI turn trigger (1-player mode)
+  useEffect(() => {
+    if(!mounted) return
+    if(state.numberOfPlayers !== 1) return
+    if(!state.prizeDrawResult?.isDone) return
+    if(state.winResult.winner !== null) return
+    if(state.currentPlayer !== AI_COLOR) return
+    if(aiRequestInFlight.current) return
+
+    aiRequestInFlight.current = true
+    setAiThinking(true)
+
+    fetch('/api/ai-move', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        positions: state.playerPositions,
+        placedWalls: state.placedWalls,
+        wallCounts: state.wallCounts,
+        currentPlayer: state.currentPlayer,
+        numberOfPlayers: state.numberOfPlayers,
+        squares: state.squares
+      })
+    })
+      .then(r => r.json() as Promise<AIMoveResponse>)
+      .then(res => {
+        if(!res.ok) {
+          alert(`AI error: ${res.error}`)
+          return
+        }
+        const { move } = res
+        if(move.type === 'move') {
+          dispatch({ type: 'MOVE_PAWN', color: AI_COLOR, targetSquare: move.target })
+        } else {
+          if(move.orientation === 'vertical') {
+            dispatch({ type: 'PLACE_VERTICAL_WALL', wallId: move.wallId, column: move.rowOrColumn })
+          } else {
+            dispatch({ type: 'PLACE_HORIZONTAL_WALL', wallId: move.wallId, row: move.rowOrColumn })
+          }
+        }
+      })
+      .catch(err => {
+        alert(`AI request failed: ${err instanceof Error ? err.message : String(err)}`)
+      })
+      .finally(() => {
+        aiRequestInFlight.current = false
+        setAiThinking(false)
+      })
+  }, [mounted, state.numberOfPlayers, state.prizeDrawResult, state.winResult, state.currentPlayer, state.playerPositions, state.placedWalls, state.wallCounts, state.squares, dispatch])
+
   if(!mounted) return null
 
+  const isVsAI = state.numberOfPlayers === 1
+
   function handleSetPlayers(count: PlayerCount) {
-    if(count === 1) {
-      alert('Coming soon!')
-      return
-    }
     dispatch({ type: 'SET_NUMBER_OF_PLAYERS', count })
   }
 
@@ -51,10 +105,12 @@ export default function QuoridorGame() {
   }
 
   function handleSquareClick(index: number) {
+    if(isVsAI && state.currentPlayer === AI_COLOR) return
     dispatch({ type: 'MOVE_PAWN', color: state.currentPlayer, targetSquare: index })
   }
 
   function handleWallClick(orientation: WallOrientation, wallId: WallId, rowOrColumn: number) {
+    if(isVsAI && state.currentPlayer === AI_COLOR) return
     if(orientation === 'vertical') {
       dispatch({ type: 'PLACE_VERTICAL_WALL', wallId, column: rowOrColumn })
     } else {
@@ -69,6 +125,7 @@ export default function QuoridorGame() {
         currentRound={state.currentRound}
         numberOfPlayers={state.numberOfPlayers}
         numberOfWalls={state.numberOfWalls}
+        aiThinking={aiThinking}
         onSetPlayers={handleSetPlayers}
         onToggleWalls={handleToggleWalls}
       />

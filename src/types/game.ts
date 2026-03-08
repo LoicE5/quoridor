@@ -19,6 +19,34 @@ export type SquareState = {
 
 export type PlayerPositions = Record<PlayerColor, number>
 
+// ── AI types ──────────────────────────────────────────────────────────────────
+
+export type AIPawnMove = { type: 'move'; target: number }
+
+export type AIWallMove = {
+  type: 'wall'
+  orientation: WallOrientation
+  wallId: WallId
+  rowOrColumn: number
+}
+
+export type AIMoveDecision = AIPawnMove | AIWallMove
+
+export type AIMoveRequest = {
+  positions: PlayerPositions
+  placedWalls: PlacedWall[]
+  wallCounts: Record<PlayerColor, number>
+  currentPlayer: PlayerColor
+  numberOfPlayers: PlayerCount
+  squares: SquareState[]
+}
+
+export type AIMoveResponse =
+  | { ok: true; move: AIMoveDecision }
+  | { ok: false; error: string }
+
+// ── Game state ────────────────────────────────────────────────────────────────
+
 export type GameState = {
   squares: SquareState[]
   placedWalls: PlacedWall[]

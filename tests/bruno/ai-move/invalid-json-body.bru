@@ -1,0 +1,38 @@
+meta {
+  name: Invalid JSON body — server returns 400
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/ai-move
+  body: text
+  auth: none
+}
+
+body:text {
+  not valid json at all
+}
+
+headers {
+  Content-Type: application/json
+}
+
+docs {
+  Sends a non-JSON body with a JSON Content-Type header.
+  The route's JSON parsing will throw and the handler returns 400.
+}
+
+tests {
+  test("status 400", () => {
+    expect(res.status).to.equal(400)
+  })
+
+  test("response indicates failure", () => {
+    expect(res.body.ok).to.equal(false)
+  })
+
+  test("error message is present", () => {
+    expect(typeof res.body.error).to.equal("string")
+  })
+}
