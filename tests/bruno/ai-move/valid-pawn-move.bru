@@ -1,0 +1,62 @@
+meta {
+  name: Valid pawn move request
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/ai-move
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "positions": { "blue": 77, "red": 5, "green": 45, "purple": 37 },
+    "placedWalls": [],
+    "wallCounts": { "blue": 10, "red": 10, "green": 10, "purple": 10 },
+    "currentPlayer": "red",
+    "numberOfPlayers": 1,
+    "squares": []
+  }
+}
+
+docs {
+  Sends a standard opening-position game state to the AI endpoint.
+  The AI plays as red (starting at square 5). No walls are placed yet.
+  Squares array is omitted — the route reconstructs wall data from placedWalls.
+
+  Expected: 200 OK with { ok: true, move: { type: "move", target: <number> } }
+  or a wall placement.
+}
+
+tests {
+  const res = res.getBody()
+
+  test("status 200", () => {
+    expect(res.status).to.equal(200)
+  })
+
+  test("response is ok", () => {
+    expect(res.body.ok).to.equal(true)
+  })
+
+  test("move has a type", () => {
+    expect(["move", "wall"]).to.include(res.body.move.type)
+  })
+
+  test("pawn move has numeric target", () => {
+    if (res.body.move.type === "move") {
+      expect(typeof res.body.move.target).to.equal("number")
+      expect(res.body.move.target).to.be.within(1, 81)
+    }
+  })
+
+  test("wall move has valid fields", () => {
+    if (res.body.move.type === "wall") {
+      expect(["vertical", "horizontal"]).to.include(res.body.move.orientation)
+      expect(res.body.move.wallId).to.be.within(1, 8)
+      expect(res.body.move.rowOrColumn).to.be.within(1, 8)
+    }
+  })
+}
