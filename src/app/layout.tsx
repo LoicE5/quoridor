@@ -3,7 +3,10 @@ import "./globals.css"
 
 export const metadata: Metadata = {
   title: "Quoridor",
-  description: "Quoridor board game"
+  description: "Quoridor board game",
+  icons: {
+    icon: "/icon.png"
+  }
 }
 
 export default function RootLayout({
