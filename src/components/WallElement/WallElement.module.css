@@ -1,0 +1,51 @@
+.verticalWall,
+.horizontalWall {
+  background: brown;
+  border: none;
+  position: absolute;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.verticalWall {
+  width: 1.11%;
+  height: 21.11%;
+}
+
+.horizontalWall {
+  height: 1.11%;
+  width: 21.11%;
+}
+
+.verticalWall:hover,
+.horizontalWall:hover {
+  opacity: 1;
+}
+
+.stayVisible {
+  opacity: 1 !important;
+  cursor: default;
+}
+
+.stayVisible:hover {
+  opacity: 1 !important;
+}
+
+.column1 { left: 11%; }
+.column2 { left: 22%; }
+.column3 { left: 33%; }
+.column4 { left: 43.95%; }
+.column5 { left: 54.9%; }
+.column6 { left: 65.8%; }
+.column7 { left: 76.7%; }
+.column8 { left: 87.6%; }
+
+.row1 { top: 11%; }
+.row2 { top: 22%; }
+.row3 { top: 33%; }
+.row4 { top: 43.95%; }
+.row5 { top: 54.9%; }
+.row6 { top: 65.8%; }
+.row7 { top: 76.7%; }
+.row8 { top: 87.6%; }

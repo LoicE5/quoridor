@@ -1,0 +1,42 @@
+.credits {
+  position: absolute;
+  margin: 0;
+  top: auto;
+  left: auto;
+  bottom: 0;
+  right: 0;
+  font-size: 0.8rem;
+  padding: 5px;
+}
+
+.backgroundDiv {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: -1;
+  background-image: url('/background.jpg');
+  background-attachment: fixed;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0.7;
+  filter: blur(10px);
+}
+
+.githubLink {
+  position: fixed;
+  left: 10px;
+  bottom: 0;
+  display: block;
+}
+
+.githubLink img {
+  width: 30px;
+  height: auto;
+  transition: filter ease-in-out 0.5s;
+}
+
+.githubLink img:hover {
+  filter: drop-shadow(0 0 50px darkslategray);
+}

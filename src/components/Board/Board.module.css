@@ -1,0 +1,7 @@
+.global {
+  border: 2px black solid;
+  position: relative;
+  margin: auto;
+  margin-top: 10px;
+  background: white;
+}

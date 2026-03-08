@@ -1,0 +1,48 @@
+meta {
+  name: Missing env vars — server returns 500
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/ai-move
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "positions": { "blue": 77, "red": 5, "green": 45, "purple": 37 },
+    "placedWalls": [],
+    "wallCounts": { "blue": 10, "red": 10, "green": 10, "purple": 10 },
+    "currentPlayer": "red",
+    "numberOfPlayers": 1,
+    "squares": []
+  }
+}
+
+docs {
+  This request is structurally identical to the happy-path one.
+  The test expectation here is documentation only — when AI_API_URL /
+  AI_API_KEY / AI_MODEL are not set in .env, the route returns:
+    { ok: false, error: "AI_API_URL, AI_API_KEY, and AI_MODEL must be set in .env" }
+  with HTTP 500.
+
+  Run with a server that has no .env to exercise this path.
+}
+
+tests {
+  // When env vars ARE configured this request succeeds (ok: true).
+  // When they are NOT configured the server returns ok: false + HTTP 500.
+  // Both outcomes are acceptable depending on the environment.
+  test("response has ok field", () => {
+    expect(typeof res.body.ok).to.equal("boolean")
+  })
+
+  test("error field present on failure", () => {
+    if (!res.body.ok) {
+      expect(typeof res.body.error).to.equal("string")
+      expect(res.body.error.length).to.be.above(0)
+    }
+  })
+}

@@ -1,0 +1,16 @@
+.infoWrapper {
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 0;
+  width: max-content;
+  height: max-content;
+  text-align: center;
+}
+
+.buttonsWrapper > button {
+  display: inline-block;
+}
+
+.wallsSet {
+  font-style: italic;
+}

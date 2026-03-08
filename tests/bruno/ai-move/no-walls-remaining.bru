@@ -1,0 +1,45 @@
+meta {
+  name: No walls remaining — only pawn moves offered
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/ai-move
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "positions": { "blue": 77, "red": 14, "green": 45, "purple": 37 },
+    "placedWalls": [],
+    "wallCounts": { "blue": 0, "red": 0, "green": 0, "purple": 0 },
+    "currentPlayer": "red",
+    "numberOfPlayers": 1,
+    "squares": []
+  }
+}
+
+docs {
+  All players have 0 walls left. The AI should only suggest a pawn move.
+  Red is at square 14 (row 2, col 5) — plenty of adjacent free squares.
+}
+
+tests {
+  test("status 200", () => {
+    expect(res.status).to.equal(200)
+  })
+
+  test("response is ok", () => {
+    expect(res.body.ok).to.equal(true)
+  })
+
+  test("move is always a pawn move when no walls remain", () => {
+    expect(res.body.move.type).to.equal("move")
+  })
+
+  test("target square is in bounds", () => {
+    expect(res.body.move.target).to.be.within(1, 81)
+  })
+}

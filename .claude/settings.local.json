@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun run tsc --noEmit)",
+      "WebSearch",
+      "WebFetch(domain:docs.anthropic.com)"
+    ]
+  }
+}

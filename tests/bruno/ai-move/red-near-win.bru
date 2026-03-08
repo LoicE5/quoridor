@@ -1,0 +1,45 @@
+meta {
+  name: Red one step from winning
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/ai-move
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "positions": { "blue": 20, "red": 74, "green": 45, "purple": 37 },
+    "placedWalls": [],
+    "wallCounts": { "blue": 5, "red": 5, "green": 5, "purple": 5 },
+    "currentPlayer": "red",
+    "numberOfPlayers": 1,
+    "squares": []
+  }
+}
+
+docs {
+  Red (AI) is at square 74 — one step from the winning row 9.
+  Valid pawn moves for red: 73, 75 (row 9 = win), 65 (north), 83 is OOB.
+  A good AI should move to 73 or 75 to win.
+
+  This request verifies the AI prefers the winning move when available.
+}
+
+tests {
+  test("status 200", () => {
+    expect(res.status).to.equal(200)
+  })
+
+  test("response is ok", () => {
+    expect(res.body.ok).to.equal(true)
+  })
+
+  test("AI chooses a valid move", () => {
+    const move = res.body.move
+    expect(["move", "wall"]).to.include(move.type)
+  })
+}

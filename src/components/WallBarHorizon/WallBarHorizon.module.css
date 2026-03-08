@@ -1,0 +1,19 @@
+.wallsHorizonContainer {
+  width: 10%;
+  height: 80%;
+  border: 2px pink solid;
+  position: absolute;
+  top: 10%;
+  display: flex;
+  flex-flow: column nowrap;
+  padding-bottom: 8%;
+}
+
+.wallsListHorizon {
+  background: brown;
+  border: none;
+  opacity: 1;
+  width: 100%;
+  height: 2%;
+  margin-top: 60%;
+}

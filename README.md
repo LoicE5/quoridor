@@ -1,38 +1,107 @@
-# Quoridor game
+# Quoridor
 
-> Note : This project is now old, and was coded without using object-oriented programming. If I had to remake it now, my approach would be much different. However, it still work like a charm.
+A browser-based implementation of the Quoridor board game, built with Next.js 16, React 19, and TypeScript.
 
-## Update
+## The Game
 
-* Added the 3 and 4 players mode (using LocalStorage)
-* Implemented a prize draw algorithm to select the player whose starting the round
-* Added the ability to switch between 10 walls per player and 5 walls per player (using LocalStorage)
-* Implemented an Artificial Intelligence and a single player mode (vs AI)
-* Added credits
-* Added some indicators about the current player's turn and the selected mode (1, 2, 3 or 4 players)
-* Implemented an alert and an auto-rematch once one of the players wins the game (reach the opposite side from its spawn)
-* Added a blurried background image
-* Made the app more adaptative on different viewport sizes (not perfectly responsive yet)
-* Separated functions, app and ai JavaScript files
+Quoridor is a 2–4 player abstract strategy game played on a 9×9 board. Each player has one pawn and a set of walls. The objective is to be the first player to reach the opposite side of the board.
 
-## About
+- **Blue** starts at row 9 and must reach row 1
+- **Red** starts at row 1 and must reach row 9
+- **Green** (3–4 players) starts at the centre and must reach column 1
+- **Purple** (4 players only) starts at the centre and must reach column 9
 
-The Quoridor is a game with a 9x9 grid and two to four players, each represented by a dot inside a square. Every player starts the game at the middle of a side of the grid, and have the goal to reach the other side before his opponent(s). Every round, he can move forward one square, or place some two-squares-length walls in order to disturb the opponent’s journey. The first player to reach the opposite side (from his starting side) wins the game.
+On each turn a player either moves their pawn one square (orthogonally) or places a wall that spans two squares. A pawn blocked by another pawn may jump over it. Walls cannot cross each other or overlap.
 
-I built the Quoridor using HTML, CSS and, mostly, JavaScript. I used JS to automatize as much as I can repetitive tasks such as generating the grid and placing the spawns. There are thousands ways to build this project, which make every single one of them pretty unique, even if the gameplay is similar. In my case, I used CSS background images to place the players into the squares, and absolute-positioned elements for the walls.
+## Tech Stack
 
-![](https://media1.giphy.com/media/29Z9vnNthPsHvzmqd3/giphy.gif)
+- **Next.js 16** (App Router, Turbopack)
+- **React 19**
+- **TypeScript 5**
+- **CSS Modules**
 
-## Technologies
+## Running locally
 
-* HTML
-* CSS
-* JavaScript
+```bash
+bun install
+bun run dev
+```
 
-## Language
+Open [http://localhost:3000](http://localhost:3000).
 
-🇬🇧 &nbsp;English 
+## Running tests
 
-### Links
+```bash
+bun test
+```
 
-**[Get to the project here !](https://loice5.github.io/Quoridor/)**
+Tests live in `tests/` and use bun's native test runner. They cover all pure game-logic functions in `src/lib/gameLogic.ts` and the localStorage helpers in `src/lib/localStorage.ts`.
+
+## Architecture
+
+```
+src/
+  types/game.ts          — shared TypeScript types (incl. AI request/response)
+  lib/
+    gameLogic.ts         — pure game logic (no DOM, no side effects)
+    localStorage.ts      — persistence helpers
+  hooks/
+    useGameReducer.ts    — useReducer wrapping all game state
+    useResponsiveBoard.ts — responsive board sizing
+  components/
+    Square/              — single board square (button + pawn image)
+    WallElement/         — clickable/placed wall overlay
+    WallBar/             — horizontal wall quota bar (top/bottom)
+    WallBarHorizon/      — vertical wall quota bar (left/right)
+    SquaresContainer/    — 81 squares + 128 wall overlays
+    Board/               — full board layout with wall bars
+    InfoPanel/           — round counter, player info, controls
+    QuoridorGame.tsx     — root client component, wires everything
+  app/
+    page.tsx             — renders QuoridorGame
+    layout.tsx           — HTML shell
+    globals.css          — minimal reset + body styles
+    api/ai-move/
+      route.ts           — POST handler: computes valid moves, calls LLM, returns decision
+```
+
+Game state lives entirely in a single `useReducer`. All logic (move validation, wall placement, win detection) is in pure functions in `gameLogic.ts`.
+
+## 1-player (vs AI) mode
+
+Click **1 player (vs AI)** to play against an LLM-powered opponent. Human plays **blue**, AI plays **red**.
+
+The AI is powered by any OpenAI-compatible endpoint (OpenRouter, Ollama, etc.). Configure it via `.env`:
+
+```bash
+cp .env.example .env
+# fill in AI_API_URL, AI_API_KEY, AI_MODEL
+```
+
+### Recommended models
+
+| Provider | Model | Notes |
+|----------|-------|-------|
+| OpenRouter (free) | `meta-llama/llama-3.2-3b-instruct:free` | Fast, no cost |
+| OpenRouter (free) | `google/gemma-2-9b-it:free` | Better reasoning |
+| Ollama (M1 Mac) | `qwen2.5:3b` | Best structured-JSON output, ~2 GB |
+| Ollama (M1 Mac) | `llama3.2` | Good balance, ~2 GB |
+| Ollama (M1 Mac) | `gemma2:2b` | Smallest footprint, ~1.6 GB |
+
+For Ollama, set `AI_API_URL=http://localhost:11434/v1/chat/completions` and `AI_API_KEY=ollama`.
+
+The AI receives the full board state (positions, walls, remaining wall counts), computes all valid moves server-side, and prompts the model to return a JSON decision. If the model hallucinates an invalid move, the server falls back to a valid one automatically.
+
+## API testing (Bruno)
+
+A Bruno collection is provided in `tests/bruno/` for the `/api/ai-move` endpoint.
+
+```bash
+# install Bruno CLI
+bun add -g @usebruno/cli
+
+# run all requests against the local dev server
+bunx @usebruno/cli run tests/bruno --env local
+```
+
+See `tests/bruno/README.md` for endpoint contract details and per-request documentation.
