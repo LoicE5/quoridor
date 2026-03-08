@@ -35,8 +35,6 @@ tests {
   // When env vars ARE configured this request succeeds (ok: true).
   // When they are NOT configured the server returns ok: false + HTTP 500.
   // Both outcomes are acceptable depending on the environment.
-  const res = res.getBody()
-
   test("response has ok field", () => {
     expect(typeof res.body.ok).to.equal("boolean")
   })
